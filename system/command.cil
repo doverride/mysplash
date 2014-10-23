@@ -1,0 +1,85 @@
+(typeattribute command_bin_file_object)
+
+(block binfile
+    (blockabstract binfile)
+        (type t)
+        (call command_bin_object (t))
+)
+
+(in o.file
+    (block bin
+        (blockinherit binfile)
+
+        (context bin (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/bin" symlink bin)
+
+        (filecon "/etc/dhcp/dhclient\.d/chrony\.sh" file bin)
+        (filecon "/etc/grub\.d/.*" file bin)
+        (filecon "/etc/profile\.d/.*" file bin)
+        (filecon "/etc/gdm/Init/.*" file bin)
+        (filecon "/etc/gdm/PostLogin/.*" file bin)
+        (filecon "/etc/gdm/PostSession/.*" file bin)
+        (filecon "/etc/gdm/PreSession/.*" file bin)
+        (filecon "/etc/kernel/postinst\.d/.*" file bin)
+        (filecon "/etc/mcelog/triggers/.*" file bin)
+        (filecon "/etc/rc\.d/init\.d/.*" file bin)
+        (filecon "/etc/rc\.d/rc\.local" file bin)
+        (filecon "/etc/security/namespace\.init" file bin)
+        (filecon "/etc/sysconfig/network-scripts/ifdown-.*" file bin)
+        (filecon "/etc/sysconfig/network-scripts/ifup-.*" file bin)
+        (filecon "/etc/sysconfig/network-scripts/init\.ipv6-global" file bin)
+
+        (filecon "/sbin" symlink bin)
+
+        (filecon "/usr/bin/.*" any bin)
+        (filecon "/usr/bin" dir bin)
+
+        (filecon "/usr/lib/dracut/.*" file bin)
+        (filecon "/usr/lib/firefox/run-mozilla\.sh" file bin)
+        (filecon "/usr/lib/qt4/bin(/.*)?" file bin)
+        (filecon "/usr/lib/rpm(/.*)?" file bin)
+        (filecon "/usr/lib/tuned/powersave/script\.sh" file bin)
+
+        (filecon "/usr/libexec/.*" any bin)
+        (filecon "/usr/libexec" dir bin)
+
+        (filecon "/usr/sbin/.*" any bin)
+        (filecon "/usr/sbin" dir bin)
+
+        (filecon "/usr/share/texlive/texmf-dist/scripts(/.*)?" file bin)
+
+        (filecon "/usr/src/kernels/[^/]*/scripts/.*" file bin)
+    )
+
+    (block shell
+        (blockinherit binfile)
+
+        (context shell (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/bin/d?ash" file shell)
+        (filecon "/usr/bin/esh" file shell)
+        (filecon "/usr/bin/bash" file shell)
+        (filecon "/usr/bin/bash2" file shell)
+        (filecon "/usr/bin/fish" file shell)
+        (filecon "/usr/bin/ksh.*" file shell)
+        (filecon "/usr/bin/mksh" file shell)
+        (filecon "/usr/bin/sash" file shell)
+        (filecon "/usr/bin/tcsh" file shell)
+        (filecon "/usr/bin/yash" file shell)
+        (filecon "/usr/bin/zsh.*" file shell)
+        (filecon "/usr/bin/git-shell" file shell)
+        (filecon "/usr/bin/scponly" file shell)
+
+        (filecon "/usr/libexec/git-core/git-shell" file shell)
+        (filecon "/usr/libexec/sudo/sesh" file shell)
+
+        (filecon "/usr/sbin/nologin" file shell)
+        (filecon "/usr/sbin/scponlyc" file shell)
+        (filecon "/usr/sbin/smrsh" file shell)
+    )
+)
+
+(macro command_bin_object ((type ARG1))
+    (call file_object (ARG1))
+    (typeattributeset command_bin_file_object ARG1))
