@@ -1,0 +1,65 @@
+(typeattribute library_file_object)
+(typeattributeset library_file_object (o.file.lib.t o.file.lib.textrel.t))
+
+(in o.file
+    (block ld_so
+        (blockinherit file)
+
+        (context lib_ld_so (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/lib/ld-[^/]*\.so(\.[^/]*)*" file lib_ld_so)
+
+        (block cache
+            (blockinherit file)
+
+            (context lib_ld_so_cache (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/etc/ld\.so\.cache.*" file lib_ld_so_cache)
+            (filecon "/etc/ld\.so\.preload.*" file lib_ld_so_cache)
+        )
+    )
+
+    (block lib
+        (blockinherit file)
+
+        (context lib (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/lib/.*" any lib)
+        (filecon "/usr/lib" symlink lib)
+        (filecon "/usr/lib" dir lib)
+
+        (filecon "/usr/libexec/sudo/.*" any lib)
+
+        (filecon "/opt/google/talkplugin/.*\.so.*" file lib)
+
+        (block textrel
+            (blockinherit file)
+        )
+    )
+)
+
+(macro libraries_list ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 o.file.lib.t list_dir_perms))
+
+(macro libraries_search ((type ARG1))
+    (call file_search_usr (ARG1))
+    (allow ARG1 o.file.lib.t search_list_perms))
+
+(macro libraries_use_ld_so ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call mmap_files_pattern (ARG1 o.file.lib.t o.file.ld_so.t))
+    (call libraries_read_ld_so_cache_files (ARG1)))
+
+(macro libraries_read_ld_so_cache_files ((type ARG1))
+    (call file_search_etc (ARG1))
+    (allow ARG1 o.file.ld_so.cache.t read_file_perms))
+
+(macro libraries_read_lib_files ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call read_files_pattern (ARG1 o.file.lib.t o.file.lib.t)))
+
+(macro libraries_use_shared_libs ((type ARG1))
+    (call file_search_usr (ARG1))
+    (call mmap_files_pattern (ARG1 o.file.lib.t library_file_object))
+    (allow ARG1 o.file.lib.textrel.t (file (execmod))))
