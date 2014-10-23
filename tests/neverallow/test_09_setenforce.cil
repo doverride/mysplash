@@ -1,0 +1,9 @@
+; type to setenforce of security of file associated with type o.sec.fs.t is not associated with either
+; sec_can_setenforce or sec_unconfined_subject
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.sec.fs.t (security (setenforce)))
+)

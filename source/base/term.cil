@@ -1,0 +1,45 @@
+(typeattribute term_pty_object)
+(typeattribute term_serial_object)
+(typeattribute term_tty_object)
+
+(block serial
+    (blockabstract serial)
+        (type t)
+        (call term_serial_object (t))
+)
+
+(in o.dev
+    (block term
+        (block tty
+            (blockinherit serial)
+
+            (context term_tty (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/hvc[0-9]+" char term_tty)
+            (filecon "/dev/tty.+" char term_tty)
+            (filecon "/dev/vcs[^/]*" char term_tty)
+        )
+
+        (block virtio
+            (blockinherit serial)
+
+            (context term_virtio (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/vport[0-9]p[0-9]+" char term_virtio)
+        )
+    )
+)
+
+(call fs_associate_devpts (term_pty_object))
+
+(macro term_pty_object ((type ARG1))
+    (call dev_object (ARG1))
+    (typeattributeset term_pty_object ARG1))
+
+(macro term_serial_object ((type ARG1))
+    (call dev_object (ARG1))
+    (typeattributeset term_serial_object ARG1))
+
+(macro term_tty_object ((type ARG1))
+    (call term_serial_object (ARG1))
+    (typeattributeset term_tty_object ARG1))

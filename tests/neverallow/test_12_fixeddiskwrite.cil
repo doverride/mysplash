@@ -1,0 +1,10 @@
+; type to append and write chr_file and blk_file associated with type o.dev.stor.fixed_disk.t is not associated with
+; either stor_unconfined_subject or stor_can_write_fixed_disk
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.dev.stor.fixed_disk.t (chr_file (append write)))
+    (allow test.t o.dev.stor.fixed_disk.t (blk_file (append write)))
+)

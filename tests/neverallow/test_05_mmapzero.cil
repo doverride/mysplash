@@ -1,0 +1,8 @@
+; type to mmap_zero of memprotect is not associated with subject_can_mmap_low
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t self (memprotect (mmap_zero)))
+)

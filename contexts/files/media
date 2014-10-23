@@ -1,0 +1,3 @@
+cdrom s.sys.u:o.r:o.dev.stor.removable.t
+floppy s.sys.u:o.r:o.dev.stor.removable.t
+disk s.sys.u:o.r:o.dev.stor.removable.t

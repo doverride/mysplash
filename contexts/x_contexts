@@ -1,0 +1,9 @@
+# Support for X object manager is unavailable
+
+# cat > /etc/X11/xorg.conf.d/00-selinux.conf <<EOF
+# Section "Module"
+#   Subsection "extmod"
+#   Option "SELinux mode disabled"
+#   EndSubSection
+#   EndSection
+# EOF

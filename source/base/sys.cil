@@ -1,0 +1,335 @@
+(boolean sys_load_kernel_module true)
+
+(sid kernel)
+(sid sysctl)
+
+(typeattribute sys_proc_object)
+(typeattribute sys_unconfined_subject)
+(typeattribute sys_sysctl_object)
+
+(in s
+    (block sys
+        (user u)
+        (role r)
+        (type t)
+
+        (call object_userrole (u))
+        (call subject (t))
+
+        (userrole u r)
+        (roletype r t)
+
+        (userlevel u systemlow)
+        (userrange u (systemlow systemhigh))
+
+        (optional sys_optional_unconfined
+            (call unconfined_subject (t)))
+    )
+)
+
+(block proc
+    (blockabstract proc)
+        (type t)
+        (call sys_proc_object (t))
+)
+
+(block sysctl
+    (blockabstract sysctl)
+        (type t)
+        (call sys_sysctl_object (t))
+)
+
+(block sys_sysctl_security_or_usermodehelper
+    (blockabstract sys_sysctl_security_or_usermodehelper)
+        (blockinherit sysctl)
+        (typeattributeset sys_sysctl_security_or_usermodehelper (t))
+)
+
+(in o
+    (block sys
+        (block proc
+            (block kallsyms
+                (blockinherit proc)
+
+                (context sys_proc_kallsyms (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/kallsyms" sys_proc_kallsyms)
+            )
+
+            (block kcore
+                (blockinherit proc)
+
+                (context sys_proc_kcore (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+                (genfscon "proc" "/kcore" sys_proc_kcore)
+            )
+
+            (block kmsg
+                (blockinherit proc)
+
+                (context sys_proc_kmsg (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+                (genfscon "proc" "/kmsg" sys_proc_kmsg)
+            )
+
+            (block mdstat
+                (blockinherit proc)
+
+                (context sys_proc_mdstat (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/mdstat" sys_proc_mdstat)
+            )
+
+            (block mtrr
+                (blockinherit proc)
+
+                (context sys_proc_mtrr (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/mtrr" sys_proc_mtrr)
+            )
+
+            (block net
+                (blockinherit proc)
+
+                (context sys_proc_net (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/net" sys_proc_net)
+            )
+
+            (block sysrq
+                (blockinherit proc)
+
+                (context sys_proc_sysrq (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sysrq-trigger" sys_proc_sysrq)
+            )
+        )
+
+        (block sysctl
+            (blockinherit sysctl)
+
+            (block crypto
+                (blockinherit sysctl)
+
+                (context sys_sysctl_crypto (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/crypto" sys_sysctl_crypto)
+            )
+
+            (block dev
+                (blockinherit sysctl)
+
+                (context sys_sysctl_dev (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/dev" sys_sysctl_dev)
+            )
+
+            (block fs
+                (blockinherit sysctl)
+
+                (call object_mountpoint (t))
+
+                (context sys_sysctl_fs (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/fs" sys_sysctl_fs)
+            )
+
+            (block irq
+                (blockinherit sysctl)
+
+                (context sys_sysctl_irq (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/irq" sys_sysctl_irq)
+            )
+
+            (block kernel
+                (blockinherit sysctl)
+
+                (context sys_sysctl_kernel (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/kernel" sys_sysctl_kernel)
+            )
+
+            (block net
+                (blockinherit sysctl)
+
+                (context sys_sysctl_net (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/net" sys_sysctl_net)
+
+                (block unix
+                    (blockinherit sysctl)
+
+                    (context sys_sysctl_net_unix (s.sys.u o.r t (systemlow systemlow)))
+
+                    (genfscon "proc" "/sys/net/unix" sys_sysctl_net_unix)
+                )
+            )
+
+            (block security
+                (blockinherit sys_sysctl_security_or_usermodehelper)
+
+                (context sys_sysctl_security (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/fs/protected_hardlinks" sys_sysctl_security)
+                (genfscon "proc" "/sys/fs/protected_symlinks" sys_sysctl_security)
+                (genfscon "proc" "/sys/fs/suid_dumpable" sys_sysctl_security)
+                (genfscon "proc" "/sys/kernel/dmesg_restrict" sys_sysctl_security)
+                (genfscon "proc" "/sys/kernel/kptr_restrict" sys_sysctl_security)
+                (genfscon "proc" "/sys/kernel/modules_disabled" sys_sysctl_security)
+                (genfscon "proc" "/sys/kernel/randomize_va_space" sys_sysctl_security)
+                (genfscon "proc" "/sys/vm/mmap_min_addr" sys_sysctl_security)
+            )
+
+            (block usermodehelper
+                (blockinherit sys_sysctl_security_or_usermodehelper)
+
+                (context sys_sysctl_usermodehelper (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/kernel/core_pattern" sys_sysctl_usermodehelper)
+                (genfscon "proc" "/sys/kernel/modprobe" sys_sysctl_usermodehelper)
+                (genfscon "proc" "/sys/kernel/poweroff_cmd" sys_sysctl_usermodehelper)
+                (genfscon "proc" "/sys/kernel/usermodehelper" sys_sysctl_usermodehelper)
+            )
+
+            (block vm
+                (blockinherit sysctl)
+
+                (context sys_sysctl_vm (s.sys.u o.r t (systemlow systemlow)))
+
+                (genfscon "proc" "/sys/vm" sys_sysctl_vm)
+
+                (block overcommit
+                    (blockinherit sysctl)
+
+                    (context sys_sysctl_vm_overcommit (s.sys.u o.r t (systemlow systemlow)))
+
+                    (genfscon "proc" "/sys/vm/overcommit_memory" sys_sysctl_vm_overcommit)
+                )
+            )
+        )
+    )
+)
+
+(in o.sec
+    (block sys
+        (block load_kernel_module
+            (blockinherit bool)
+
+            (context sys_load_kernel_module (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/sys_load_kernel_module"
+                sys_load_kernel_module)
+        )
+    )
+)
+
+(typeattribute sys_can_load_kernel_module)
+(typeattribute sys_not_can_load_kernel_module)
+(typeattributeset sys_not_can_load_kernel_module (not sys_can_load_kernel_module))
+(neverallow sys_not_can_load_kernel_module self (capability (sys_module)))
+
+(typeattribute sys_can_read_kernel_message)
+(typeattribute sys_not_can_read_kernel_message_or_sys_unconfined_subject)
+(typeattributeset sys_not_can_read_kernel_message_or_sys_unconfined_subject
+    (not (sys_can_read_kernel_message sys_unconfined_subject)))
+(neverallow sys_not_can_read_kernel_message_or_sys_unconfined_subject
+    o.sys.proc.kmsg.t all_file_perms_except_getattr)
+
+(typeattribute sys_can_dump_kernel)
+(typeattribute sys_not_can_dump_kernel_or_sys_unconfined_subject)
+(typeattributeset sys_not_can_dump_kernel_or_sys_unconfined_subject
+    (not (sys_can_dump_kernel sys_unconfined_subject)))
+(neverallow sys_not_can_dump_kernel_or_sys_unconfined_subject
+    o.sys.proc.kcore.t all_file_perms_except_getattr)
+
+(typeattribute sys_sysctl_security_or_usermodehelper)
+(typeattribute sys_not_sysctl_security_or_usermodehelper)
+(typeattribute sys_can_write_sysctl_security_and_usermodehelper)
+(typeattribute sys_not_can_write_sysctl_security_and_usermodehelper)
+(typeattributeset sys_not_can_write_sysctl_security_and_usermodehelper
+    (not (sys_can_write_sysctl_security_and_usermodehelper)))
+(neverallow sys_not_can_write_sysctl_security_and_usermodehelper
+    sys_sysctl_security_or_usermodehelper (file (append write)))
+
+(allow sys_unconfined_subject s.sys.t (system
+    (ipc_info syslog_read syslog_mod syslog_console module_request)))
+
+(allow sys_unconfined_subject sys_proc_object rw_file_perms)
+(allow sys_unconfined_subject sys_proc_object list_dir_perms)
+(allow sys_unconfined_subject sys_proc_object read_lnk_file_perms)
+
+(typeattributeset sys_not_sysctl_security_or_usermodehelper
+    (and (sys_sysctl_object) (not (sys_sysctl_security_or_usermodehelper))))
+(allow sys_unconfined_subject
+    sys_not_sysctl_security_or_usermodehelper rw_file_perms)
+(allow sys_unconfined_subject sys_sysctl_security_or_usermodehelper
+    read_file_perms)
+(allow sys_unconfined_subject sys_sysctl_object list_dir_perms)
+(allow sys_unconfined_subject sys_sysctl_object read_lnk_file_perms)
+
+(booleanif (sys_load_kernel_module)
+    (true
+        (allow sys_can_load_kernel_module self (capability (sys_nice sys_module)))
+        (allow sys_can_load_kernel_module s.sys.t (process (setsched)))))
+
+(macro sys_proc_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset sys_proc_object ARG1))
+
+(macro sys_sysctl_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset sys_sysctl_object ARG1))
+
+(macro sys_dump_kernel ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 o.sys.proc.kcore.t read_file_perms)
+    (typeattributeset sys_can_dump_kernel ARG1))
+
+(macro sys_load_kernel_module ((type ARG1))
+    (typeattributeset sys_can_load_kernel_module ARG1))
+
+(macro sys_read_kernel_message ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 o.sys.proc.kmsg.t read_file_perms)
+    (typeattributeset sys_can_read_kernel_message ARG1))
+
+(macro sys_rw_sysctl_security_files ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 o.sys.sysctl.fs.t search_dir_perms)
+    (allow ARG1 o.sys.sysctl.kernel.t search_dir_perms)
+    (allow ARG1 o.sys.sysctl.vm.t search_dir_perms)
+    (allow ARG1 o.sys.sysctl.security.t rw_file_perms)
+    (typeattributeset
+        sys_can_write_sysctl_security_and_usermodehelper ARG1))
+
+(macro sys_rw_sysctl_usermodehelper_files ((type ARG1))
+    (call sys_search_sysctl_kernel (ARG1))
+    (call rw_files_pattern (ARG1 o.sys.sysctl.usermodehelper.t
+        o.sys.sysctl.usermodehelper.t))
+    (typeattributeset
+        sys_can_write_sysctl_security_and_usermodehelper ARG1))
+
+(macro sys_search_sysctl ((type ARG1))
+    (call fs_search_proc (ARG1))
+    (allow ARG1 o.sys.sysctl.t search_dir_perms))
+
+(macro sys_search_sysctl_kernel ((type ARG1))
+    (call sys_search_sysctl (ARG1))
+    (allow ARG1 o.sys.sysctl.kernel.t search_dir_perms))
+
+(macro sys_unconfined_subject ((type ARG1))
+    (call sys_load_kernel_module (ARG1))
+    (typeattributeset sys_unconfined_subject ARG1))
+
+(context sys_sys (s.sys.u s.sys.r s.sys.t (mls_systemhigh mls_systemhigh)))
+
+(sidcontext kernel sys_sys)
+
+(context sys_sysctl (s.sys.u o.r o.sys.sysctl.t (systemlow systemlow)))
+
+(sidcontext sysctl sys_sysctl)
+
+(genfscon "proc" "/sys" sys_sysctl)

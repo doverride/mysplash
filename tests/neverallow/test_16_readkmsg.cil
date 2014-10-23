@@ -1,0 +1,9 @@
+; type to read file associated with type o.sys.proc.kmsg.t is not associated with either
+; sys_can_read_kernel_message or sys_unconfined_subject
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.sys.proc.kmsg.t (file (read)))
+)

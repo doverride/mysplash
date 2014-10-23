@@ -1,0 +1,9 @@
+; type to load_policy of security of file associated with type o.sec.fs.t is not associated with either
+; sec_can_load_policy or sec_unconfined_subject
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.sec.fs.t (security (load_policy)))
+)

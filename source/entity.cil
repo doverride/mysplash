@@ -1,0 +1,28 @@
+(sid unlabeled)
+
+(typeattribute entity_unconfined_subject)
+
+(block e
+    (block invalid
+        (type t)
+        (call object_roletype (t))
+
+        (call object_mountpoint (t)) ; FIXME
+
+        (allow t self (process (sigchld)))
+
+        (allow entity_unconfined_subject t signal_perms)
+        (allow entity_unconfined_subject t (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+        (allow entity_unconfined_subject t (filesystem (all)))
+    )
+)
+
+(typeattribute entity)
+(typeattributeset entity (all))
+
+(macro entity_unconfined_subject ((type ARG1))
+    (typeattributeset entity_unconfined_subject ARG1))
+
+(context invalid (s.sys.u o.r e.invalid.t (mls_systemhigh mls_systemhigh)))
+(sidcontext unlabeled invalid)

@@ -1,0 +1,10 @@
+; type to append and write file associated with type o.sys.sysctl.security.t or sys.sysctl.usermodehelper.t is
+; not associated with sys_can_write_sysctl_security_and_usermodehelper
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.sys.sysctl.security.t (file (append write)))
+    (allow test.t o.sys.sysctl.usermodehelper.t (file (append write)))
+)

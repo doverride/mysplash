@@ -1,0 +1,6 @@
+contexts/files/file_contexts
+policy/policy.*
+tests/modularity/file_contexts
+tests/modularity/policy.*
+tests/neverallow/file_contexts
+tests/neverallow/policy.*

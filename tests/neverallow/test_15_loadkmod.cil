@@ -1,0 +1,8 @@
+; type to sys_module of capability is not associated with sys_can_load_kernel_module
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t self (capability (sys_module)))
+)

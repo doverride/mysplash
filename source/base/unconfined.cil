@@ -1,0 +1,122 @@
+(boolean unconfined_execheap true)
+(boolean unconfined_execmem true)
+(boolean unconfined_execstack true)
+(boolean unconfined_execmod true)
+(boolean unconfined_ptrace true)
+
+(typeattribute unconfined_subject)
+
+(in o.sec
+    (block unconfined
+        (block execheap
+            (blockinherit bool)
+
+            (context unconfined_execheap (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/unconfined_execheap"
+                unconfined_execheap)
+
+        )
+
+        (block execmem
+            (blockinherit bool)
+
+            (context unconfined_execmem (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/unconfined_execmem"
+                unconfined_execmem)
+
+        )
+
+        (block execstack
+            (blockinherit bool)
+
+            (context unconfined_execstack (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/unconfined_execstack"
+                unconfined_execstack)
+
+        )
+
+        (block execmod
+            (blockinherit bool)
+
+            (context unconfined_execmod (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/unconfined_execmod"
+                unconfined_execmod)
+
+        )
+
+        (block ptrace
+            (blockinherit bool)
+
+            (context unconfined_ptrace (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/unconfined_ptrace"
+                unconfined_ptrace)
+
+        )
+    )
+)
+
+(allow unconfined_subject self (dbus (all)))
+(allow unconfined_subject self (system (halt reboot status
+    start stop undefined enable disable reload)))
+(allow unconfined_subject file_object (service (all)))
+(allow unconfined_subject self (passwd (all)))
+
+(call sys_rw_sysctl_security_files (unconfined_subject))
+(call sys_rw_sysctl_usermodehelper_files (unconfined_subject))
+
+(allow unconfined_subject self
+    all_capability_perms_except_sys_module_and_sys_nice)
+(allow unconfined_subject self
+    all_capability2_perms_except_mac_override_and_mac_admin)
+(allow unconfined_subject self (process
+    (transition dyntransition setcurrent)))
+(allow unconfined_subject self
+    all_fifo_file_perms_except_mounton_and_execmod)
+
+(call entity_unconfined_subject (unconfined_subject))
+
+(call object_unconfined_subject (unconfined_subject))
+(call subject_unconfined_subject (unconfined_subject))
+
+(call dev_unconfined_subject (unconfined_subject))
+(call file_unconfined_subject (unconfined_subject))
+(call fs_unconfined_subject (unconfined_subject))
+(call net_unconfined_subject (unconfined_subject))
+(call sec_unconfined_subject (unconfined_subject))
+(call sys_unconfined_subject (unconfined_subject))
+
+(optional unconfined_subject_optional_stor
+    (call stor_unconfined_subject (unconfined_subject)))
+
+(booleanif unconfined_execheap
+    (true
+        (allow unconfined_subject self (process (execheap)))))
+
+(booleanif unconfined_execmem
+    (true
+        (allow unconfined_subject self (process (execmem)))))
+
+(booleanif unconfined_execstack
+    (true
+        (allow unconfined_subject self (process (execstack execmem)))))
+
+(booleanif unconfined_execmod
+    (true
+        (call file_execmod_all_files (unconfined_subject))))
+
+(booleanif unconfined_ptrace
+    (true
+        (call subject_ptrace_all (unconfined_subject))))
+
+(macro unconfined_subject ((type ARG1))
+    (typeattributeset unconfined_subject ARG1))

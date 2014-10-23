@@ -1,0 +1,475 @@
+(defaultrole file target)
+(defaultrole dir target)
+(defaultrole lnk_file target)
+(defaultrole chr_file target)
+(defaultrole blk_file target)
+(defaultrole sock_file target)
+(defaultrole fifo_file target)
+
+(typeattribute file_object)
+
+(typeattribute file_auth_object)
+(typeattribute file_not_auth_object)
+
+(typeattribute file_security_object)
+(typeattribute file_not_security_object)
+
+(typeattribute file_boot)
+(typeattribute file_etc)
+(typeattribute file_mnt)
+(typeattribute file_run)
+(typeattribute file_usr)
+(typeattribute file_var)
+
+(typeattribute file_cache)
+(typeattribute file_lib)
+(typeattribute file_lock)
+(typeattribute file_log)
+(typeattribute file_spool)
+(typeattribute file_tmp)
+(typeattribute file_tmpfs)
+
+(typeattribute file_unconfined_subject)
+
+(block file
+    (blockabstract file)
+        (type t)
+        (call file_object (t))
+)
+
+(block authfile
+    (blockabstract authfile)
+        (type t)
+        (call file_auth_object (t))
+)
+
+(block bootfile
+    (blockabstract bootfile)
+        (type t)
+        (call file_object (t))
+        (call file_boot (t))
+)
+
+(block cachefile
+    (blockabstract cachefile)
+        (type t)
+        (call file_object (t))
+        (call file_cache (t))
+)
+
+(block etcfile
+    (blockabstract etcfile)
+        (type t)
+        (call file_object (t))
+        (call file_etc (t))
+)
+
+(block homefile
+    (blockabstract homefile)
+        (type t)
+        (call file_object (t))
+)
+
+(block mntfile
+    (blockabstract mntfile)
+        (type t)
+        (call file_object (t))
+        (call file_mnt (t))
+)
+
+(block lffile
+    (blockabstract lffile)
+        (type t)
+        (call file_object (t))
+)
+
+(block libfile
+    (blockabstract libfile)
+        (type t)
+        (call file_object (t))
+        (call file_lib (t))
+)
+
+(block lockfile
+    (blockabstract lockfile)
+        (type t)
+        (call file_object (t))
+        (call file_lock (t))
+)
+
+(block logfile
+    (blockabstract logfile)
+        (type t)
+        (call file_object (t))
+        (call file_log (t))
+)
+
+(block runfile
+    (blockabstract runfile)
+        (type t)
+        (call file_object (t))
+        (call file_run (t))
+)
+
+(block secfile
+    (blockabstract secfile)
+        (type t)
+        (call file_security_object (t))
+)
+
+(block spoolfile
+    (blockabstract spoolfile)
+        (type t)
+        (call file_object (t))
+        (call file_spool (t))
+)
+
+(block tmpfile
+    (blockabstract tmpfile)
+        (type t)
+        (call file_object (t))
+        (call file_tmp (t))
+)
+
+(block tmpfsfile
+    (blockabstract tmpfsfile)
+        (type t)
+        (call file_object (t))
+        (call file_tmpfs (t))
+)
+
+(block usrfile
+    (blockabstract usrfile)
+        (type t)
+        (call file_object (t))
+        (call file_usr (t))
+)
+
+(block varfile
+    (blockabstract varfile)
+        (type t)
+        (call file_object (t))
+        (call file_var (t))
+)
+
+(in o
+    (block file
+        (blockinherit file)
+
+        (context file_file (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/.*" any file_file)
+
+        (block boot
+            (blockinherit bootfile)
+
+            (call object_mountpoint (t))
+
+            (context file_boot (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/boot/.*" any file_boot)
+            (filecon "/boot" dir file_boot)
+        )
+
+        (block etc
+            (blockinherit etcfile)
+
+            (call object_mountpoint (t))
+
+            (context file_etc (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/etc/.*" any file_etc)
+            (filecon "/etc" dir file_etc)
+            (filecon "/etc/sysconfig/network-scripts/network-functions.*"
+                file file_etc)
+            (filecon "/etc/rc\.d/init\.d/functions" file file_etc)
+            (filecon "/etc/rc\.d/init\.d/README" file file_etc)
+
+            (filecon "/usr/local/etc/.*" any file_etc)
+            (filecon "/usr/local/etc" dir file_etc)
+        )
+
+        (block home
+            (blockinherit homefile)
+
+            (call object_mountpoint (t))
+
+            (context file_home (s.sys.u o.r t (systemlow mls_systemhigh)))
+
+            (filecon "/home/.*" any ())
+            (filecon "/home" symlink (s.sys.u o.r t (systemlow systemlow)))
+            (filecon "/home" dir file_home)
+        )
+
+        (block lf
+            (blockinherit lffile)
+
+            (context file_lf (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+            (filecon "/\.journal" any ())
+            (filecon "/lost\+found/.*" any ())
+            (filecon "/lost\+found" dir file_lf)
+
+            (filecon "/boot/\.journal" any ())
+            (filecon "/boot/lost\+found/.*" any ())
+            (filecon "/boot/lost\+found" dir file_lf)
+
+            (filecon "/etc/\.journal" any ())
+            (filecon "/etc/lost\+found/.*" any ())
+            (filecon "/etc/lost\+found" dir file_lf)
+
+            (filecon "/home/\.journal" any ())
+            (filecon "/home/lost\+found/.*" any ())
+            (filecon "/home/lost\+found" dir file_lf)
+
+            (filecon "/opt/\.journal" any ())
+            (filecon "/opt/lost\+found/.*" any ())
+            (filecon "/opt/lost\+found" dir file_lf)
+
+            (filecon "/srv/\.journal" any ())
+            (filecon "/srv/lost\+found/.*" any ())
+            (filecon "/srv/lost\+found" dir file_lf)
+
+            (filecon "/usr/\.journal" any ())
+            (filecon "/usr/lost\+found/.*" any ())
+            (filecon "/usr/lost\+found" dir file_lf)
+
+            (filecon "/var/\.journal" any ())
+            (filecon "/var/lost\+found/.*" any ())
+            (filecon "/var/lost\+found" dir file_lf)
+
+            (filecon "/var/cache/\.journal" any ())
+            (filecon "/var/cache/lost\+found/.*" any ())
+            (filecon "/var/cache/lost\+found" dir file_lf)
+
+            (filecon "/var/lib/\.journal" any ())
+            (filecon "/var/lib/lost\+found/.*" any ())
+            (filecon "/var/lib/lost\+found" dir file_lf)
+
+            (filecon "/var/log/\.journal" any ())
+            (filecon "/var/log/lost\+found/.*" any ())
+            (filecon "/var/log/lost\+found" dir file_lf)
+
+            (filecon "/var/log/audit/\.journal" any ())
+            (filecon "/var/log/audit/lost\+found/.*" any ())
+            (filecon "/var/log/audit/lost\+found" dir file_lf)
+
+            (filecon "/var/spool/\.journal" any ())
+            (filecon "/var/spool/lost\+found/.*" any ())
+            (filecon "/var/spool/lost\+found" dir file_lf)
+
+            (filecon "/var/tmp/\.journal" any ())
+            (filecon "/var/tmp/lost\+found/.*" any ())
+            (filecon "/var/tmp/lost\+found" dir file_lf)
+        )
+
+        (block mnt
+            (blockinherit mntfile)
+
+            (call object_mountpoint (t))
+
+            (context file_mnt (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/media/[^/]*/.*" any ())
+            (filecon "/media(/[^/]*)?" symlink file_mnt)
+            (filecon "/media(/[^/]*)?" dir file_mnt)
+
+            (filecon "/mnt/[^/]*/.*" any ())
+            (filecon "/mnt(/[^/]*)?" symlink file_mnt)
+            (filecon "/mnt(/[^/]*)?" dir file_mnt)
+        )
+
+        (block run
+            (blockinherit runfile)
+
+            (call object_mountpoint (t))
+
+            (context file_run (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/var/run/.*" any file_run)
+            (filecon "/var/run" symlink file_run)
+            (filecon "/var/run" dir file_run)
+
+            (block lock
+                (blockinherit lockfile)
+
+                (call object_mountpoint (t))
+
+                (context file_lock (s.sys.u o.r t (systemlow systemlow)))
+
+                (filecon "/var/lock" symlink file_lock)
+
+                (filecon "/var/run/lock/.*" any file_lock)
+                (filecon "/var/run/lock" symlink file_lock)
+                (filecon "/var/run/lock" dir file_lock)
+            )
+
+            (block user
+                (blockinherit runfile)
+
+                (call object_mountpoint (t))
+
+                (context file_user (s.sys.u o.r t (systemlow mls_systemhigh)))
+
+                (filecon "/var/run/user/.*" any ())
+                (filecon "/var/run/user" dir file_user)
+            )
+        )
+
+        (block usr
+            (blockinherit usrfile)
+
+            (call object_mountpoint (t))
+
+            (context file_usr (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/opt/.*" any file_usr)
+            (filecon "/opt" dir file_usr)
+
+            (filecon "/usr/.*" any file_usr)
+            (filecon "/usr" dir file_usr)
+        )
+
+        (block var
+            (blockinherit varfile)
+
+            (call object_mountpoint (t))
+
+            (context file_var (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/srv/.*" any file_var)
+            (filecon "/srv" dir file_var)
+
+            (filecon "/var/.*" any file_var)
+            (filecon "/var" dir file_var)
+
+            (block cache
+                (blockinherit cachefile)
+
+                (call object_mountpoint (t))
+
+                (context file_cache (s.sys.u o.r t (systemlow systemlow)))
+
+                (filecon "/var/cache/.*" any file_cache)
+                (filecon "/var/cache" dir file_cache)
+            )
+
+            (block lib
+                (blockinherit libfile)
+
+                (call object_mountpoint (t))
+
+                (context file_lib (s.sys.u o.r t (systemlow systemlow)))
+
+                (filecon "/var/lib/.*" any file_lib)
+                (filecon "/var/lib" dir file_lib)
+            )
+
+            (block log
+                (blockinherit logfile)
+
+                (call object_mountpoint (t))
+
+                (context file_log (s.sys.u o.r t (systemlow mls_systemhigh)))
+
+                (filecon "/var/log/.*" any file_log)
+                (filecon "/var/log" dir file_log)
+            )
+
+            (block spool
+                (blockinherit spoolfile)
+
+                (call object_mountpoint (t))
+
+                (context file_spool (s.sys.u o.r t (systemlow systemlow)))
+
+                (filecon "/var/spool/.*" any file_spool)
+                (filecon "/var/spool" dir file_spool)
+            )
+
+            (block tmp
+                (blockinherit tmpfile)
+
+                (call object_mountpoint (t))
+
+                (context file_tmp (s.sys.u o.r t (systemlow mls_systemhigh)))
+
+                (filecon "/usr/tmp" symlink (s.sys.u o.r t (systemlow systemlow)))
+
+                (filecon "/var/tmp/.*" any ())
+                (filecon "/var/tmp" symlink (s.sys.u o.r t (systemlow systemlow)))
+                (filecon "/var/tmp" dir file_tmp)
+            )
+        )
+    )
+)
+
+(call fs_associate_fs (file_object))
+
+(call fs_associate_tmpfs (file_lock))
+(call fs_associate_tmpfs (file_run))
+(call fs_associate_tmpfs (file_tmpfs))
+
+(allow file_unconfined_subject file_object (all_file_objects
+    (not_mounton_entrypoint_and_execmod)))
+
+(macro file_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset file_object ARG1)
+    (typeattributeset file_not_auth_object ARG1)
+    (typeattributeset file_not_security_object ARG1))
+
+(macro file_auth_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset file_object ARG1)
+    (typeattributeset file_auth_object ARG1))
+
+(macro file_boot ((type ARG1))
+    (typeattributeset file_boot ARG1))
+
+(macro file_cache ((type ARG1))
+    (typeattributeset file_cache ARG1))
+
+(macro file_etc ((type ARG1))
+    (typeattributeset file_etc ARG1))
+
+(macro file_lib ((type ARG1))
+    (typeattributeset file_lib ARG1))
+
+(macro file_lock ((type ARG1))
+    (typeattributeset file_lock ARG1))
+
+(macro file_log ((type ARG1))
+    (typeattributeset file_log ARG1))
+
+(macro file_mnt ((type ARG1))
+    (typeattributeset file_mnt ARG1))
+
+(macro file_run ((type ARG1))
+    (typeattributeset file_run ARG1))
+
+(macro file_security_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset file_object ARG1)
+    (typeattributeset file_security_object ARG1))
+
+(macro file_spool ((type ARG1))
+    (typeattributeset file_spool ARG1))
+
+(macro file_tmp ((type ARG1))
+    (typeattributeset file_tmp ARG1))
+
+(macro file_tmpfs ((type ARG1))
+    (typeattributeset file_tmpfs ARG1))
+
+(macro file_usr ((type ARG1))
+    (typeattributeset file_usr ARG1))
+
+(macro file_var ((type ARG1))
+    (typeattributeset file_var ARG1))
+
+(macro file_execmod_all_files ((type ARG1))
+    (allow ARG1 file_object (file (execmod))))
+
+(macro file_unconfined_subject ((type ARG1))
+    (typeattributeset file_unconfined_subject ARG1))

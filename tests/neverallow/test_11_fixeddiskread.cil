@@ -1,0 +1,10 @@
+; type to read chr_file and blk_file associated with type o.dev.stor.fixed_disk.t is not associated with either
+; stor_unconfined_subject or stor_can_read_fixed_disk
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.dev.stor.fixed_disk.t (chr_file (read)))
+    (allow test.t o.dev.stor.fixed_disk.t (blk_file (read)))
+)

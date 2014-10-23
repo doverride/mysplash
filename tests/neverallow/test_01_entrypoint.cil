@@ -1,0 +1,13 @@
+; type to be used as entrypoint to a type associated with subject is not associated with subject_entry_file_object
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (block exec
+        (type t)
+        (call file_object (t))
+    )
+
+    (allow test.t test.exec.t (file (entrypoint)))
+)

@@ -1,0 +1,69 @@
+(sid file)
+
+(typeattribute object)
+(typeattribute object_mountpoint)
+(typeattribute object_unconfined_subject)
+
+(block o
+    (role r)
+
+    (block unlabeled
+        (type t)
+        (call object (t))
+
+        (call fs_associate_devtmpfs (t))
+        (call fs_associate_fs (t))
+        (call fs_associate_tmpfs (t))
+
+        (allow object_unconfined_subject t (all_file_objects
+            (not_mounton_entrypoint_and_execmod)))
+    )
+)
+
+(call object_roletype (object))
+
+(allow object_unconfined_subject object_mountpoint (dir (mounton)))
+
+(macro object ((type ARG1))
+    (typeattributeset object ARG1))
+
+(macro object_mountpoint ((type ARG1))
+    (typeattributeset object_mountpoint ARG1))
+
+(macro object_dontaudit_audit_access_mountpoint_dir ((type ARG1))
+    (dontaudit ARG1 object_mountpoint (dir (audit_access))))
+
+(macro object_list_mountpoint ((type ARG1))
+    (allow ARG1 object_mountpoint list_dir_perms))
+
+(macro object_mounton_mountpoint_dir ((type ARG1))
+    (call object_dontaudit_audit_access_mountpoint_dir (ARG1))
+    (call object_list_mountpoint (ARG1))
+    (allow ARG1 object_mountpoint (dir (mounton))))
+
+(macro object_roletype ((type ARG1))
+    (roletype o.r ARG1))
+
+(macro object_userrole ((user ARG1))
+    (userrole ARG1 o.r))
+
+(macro object_recvfrom_unlabeled_tcp_socket ((type ARG1))
+    (allow ARG1 o.unlabeled.t (tcp_socket (recvfrom))))
+
+(macro object_recvfrom_unlabeled_udp_socket ((type ARG1))
+    (allow ARG1 o.unlabeled.t (udp_socket (recvfrom))))
+
+(macro object_recvfrom_unlabeled_rawip_socket ((type ARG1))
+    (allow ARG1 o.unlabeled.t (rawip_socket (recvfrom))))
+
+(macro object_recvfrom_unlabeled_dccp_socket ((type ARG1))
+    (allow ARG1 o.unlabeled.t (dccp_socket (recvfrom))))
+
+(macro object_recv_unlabeled_peer ((type ARG1))
+    (allow ARG1 o.unlabeled.t (peer (recv))))
+
+(macro object_unconfined_subject ((type ARG1))
+    (typeattributeset object_unconfined_subject ARG1))
+
+(context unlabeled (s.sys.u o.r o.unlabeled.t (systemlow systemlow)))
+(sidcontext file unlabeled)

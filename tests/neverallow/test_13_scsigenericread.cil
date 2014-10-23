@@ -1,0 +1,9 @@
+; type to read chr_file associated with type o.dev.stor.scsi_generic.t is not associated with either
+; stor_unconfined_subject or stor_can_read_scsi_generic
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.dev.stor.scsi_generic.t (chr_file (read)))
+)

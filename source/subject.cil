@@ -1,0 +1,149 @@
+(boolean subject_mmap_low true)
+
+(typeattribute subject)
+(typeattribute subject_entry_file_object)
+(typeattribute subject_unconfined_subject)
+
+(typeattribute subject_can_change_object_identity)
+(typeattribute subject_can_change_subject_identity)
+(typeattribute subject_can_change_subject_role)
+(typeattribute subject_can_change_system_identity)
+(typeattribute subject_can_change_system_role)
+(typeattribute subject_uncond_exempt)
+(typeattribute subject_user_target)
+
+(block s
+)
+
+(in o.sec
+    (block subject
+        (block mmap_low
+            (blockinherit bool)
+
+            (context subject_mmap_low (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/subject_mmap_low"
+                subject_mmap_low)
+        )
+    )
+)
+
+(call object_roletype (subject))
+
+(typeattribute subject_not_subject_entry_file_object)
+(typeattributeset subject_not_subject_entry_file_object (not
+    (subject_entry_file_object)))
+(neverallow subject subject_not_subject_entry_file_object
+    (file (entrypoint)))
+
+(typeattribute subject_not_subject)
+(typeattributeset subject_not_subject (not subject))
+(neverallow subject subject_not_subject (process (transition
+    dyntransition)))
+
+(typeattribute subject_can_set_current_context)
+(typeattribute subject_not_can_set_current_context)
+(typeattributeset subject_not_can_set_current_context
+    (and (subject) (not (subject_can_set_current_context))))
+(neverallow subject_not_can_set_current_context self (process (setcurrent)))
+
+(typeattribute subject_can_mmap_low)
+(typeattribute subject_not_can_mmap_low)
+(typeattributeset subject_not_can_mmap_low
+    (and (subject) (not (subject_can_mmap_low))))
+(neverallow subject_not_can_mmap_low self (memprotect (mmap_zero)))
+
+(allow subject_unconfined_subject subject
+    all_process_perms_except_transition_ptrace_setsched_dyntransition_setcurrent_execmem_execstack_and_execheap)
+(allow subject_unconfined_subject subject rw_file_perms)
+(allow subject_unconfined_subject subject list_dir_perms)
+(allow subject_unconfined_subject subject read_lnk_file_perms)
+(allow subject_unconfined_subject subject (fd (all)))
+(allow subject_unconfined_subject subject (socket (all)))
+(allow subject_unconfined_subject subject create_tcp_stream_socket_perms)
+(allow subject_unconfined_subject subject create_udp_socket_perms)
+(allow subject_unconfined_subject subject create_rawip_socket_perms)
+(allow subject_unconfined_subject subject (netlink_socket (all)))
+(allow subject_unconfined_subject subject (packet_socket (all)))
+(allow subject_unconfined_subject subject (unix_stream_socket (all)))
+(allow subject_unconfined_subject subject (unix_dgram_socket (all)))
+(allow subject_unconfined_subject subject (sem (all)))
+(allow subject_unconfined_subject subject (msg (all)))
+(allow subject_unconfined_subject subject (msgq (all)))
+(allow subject_unconfined_subject subject (shm (all)))
+(allow subject_unconfined_subject subject (ipc (all)))
+(allow subject_unconfined_subject subject (netlink_route_socket (all)))
+(allow subject_unconfined_subject subject (netlink_firewall_socket (all)))
+(allow subject_unconfined_subject subject (netlink_tcpdiag_socket (all)))
+(allow subject_unconfined_subject subject (netlink_nflog_socket (all)))
+(allow subject_unconfined_subject subject (netlink_xfrm_socket (all)))
+(allow subject_unconfined_subject subject (netlink_selinux_socket (all)))
+(allow subject_unconfined_subject subject (netlink_audit_socket (all)))
+(allow subject_unconfined_subject subject (netlink_ip6fw_socket (all)))
+(allow subject_unconfined_subject subject (netlink_dnrt_socket (all)))
+(allow subject_unconfined_subject subject (netlink_kobject_uevent_socket (all)))
+(allow subject_unconfined_subject subject (appletalk_socket (all)))
+(allow subject_unconfined_subject subject (key (all)))
+(allow subject_unconfined_subject subject create_dccp_stream_socket_perms)
+(allow subject_unconfined_subject subject (tun_socket (all)))
+
+(allow subject_unconfined_subject subject_entry_file_object (file (entrypoint)))
+
+(macro subject ((type ARG1))
+    (typeattributeset subject ARG1))
+
+(macro subject_system_change_exemption ((type ARG1))
+    (call subject_system_identity_change_exemption (ARG1))
+    (call subject_system_role_change_exemption (ARG1)))
+
+(macro subject_system_identity_change_exemption ((type ARG1))
+    (typeattributeset subject_can_change_system_identity ARG1))
+
+(macro subject_system_role_change_exemption ((type ARG1))
+    (typeattributeset subject_can_change_system_role ARG1))
+
+(macro subject_change_exemption ((type ARG1))
+    (call subject_identity_change_exemption (ARG1))
+    (call subject_role_change_exemption (ARG1)))
+
+(macro subject_identity_change_exemption ((type ARG1))
+    (typeattributeset subject_can_change_subject_identity ARG1))
+
+(macro subject_role_change_exemption ((type ARG1))
+    (typeattributeset subject_can_change_subject_role ARG1))
+
+(macro subject_object_identity_change_exemption ((type ARG1))
+    (typeattributeset subject_can_change_object_identity ARG1))
+
+(macro subject_uncond_exemption ((type ARG1))
+    (typeattributeset subject_uncond_exempt ARG1))
+
+(macro subject_user_exemption_target ((type ARG1))
+    (typeattributeset subject_user_target ARG1))
+
+(macro subject_dynamic_subject_type_transition_subject ((type ARG1))
+    (typeattributeset subject_can_set_current_context ARG1))
+
+(macro subject_entry_object ((type ARG1))
+    (typeattributeset subject_entry_file_object ARG1))
+
+(macro subject_mmap_low ((type ARG1))
+    (typeattributeset subject_can_mmap_low ARG1)
+    (booleanif subject_mmap_low
+        (true
+            (allow ARG1 self (memprotect (mmap_zero))))))
+
+(macro subject_mmap_low_uncond ((type ARG1))
+    (allow ARG1 self (memprotect (mmap_zero)))
+    (typeattributeset subject_can_mmap_low ARG1))
+
+(macro subject_ptrace_all ((type ARG1))
+    (allow ARG1 subject (process (ptrace))))
+
+(macro subject_unconfined_subject ((type ARG1))
+    (call subject_dynamic_subject_type_transition_subject (ARG1))
+    (call subject_mmap_low (ARG1))
+    (call subject_object_identity_change_exemption (ARG1))
+    (call subject_uncond_exemption (ARG1))
+    (typeattributeset subject_unconfined_subject ARG1))

@@ -1,0 +1,9 @@
+; type to read file associated with type o.sys.proc.kcore.t is not associated with either
+; sys_can_dump_kernel or sys_unconfined_subject
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.sys.proc.kcore.t (file (read)))
+)

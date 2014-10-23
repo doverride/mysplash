@@ -1,0 +1,9 @@
+; type to append and write chr_file associated with type o.dev.memory.t is not associated with either
+; dev_unconfined_subject or dev_can_write_memory
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t o.dev.memory.t (chr_file (append write)))
+)

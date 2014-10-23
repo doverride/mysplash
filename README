@@ -1,0 +1,55 @@
+Splash (A striking show of impression) SELinux security policy
+
+RATIONALE
+
+Splash aims to be compelling sample SELinux security policy to be used as a basis to build upon.
+
+Security, and security policy is no "one-size-fits-all". SELinux security policy is no different. Splash appreciates
+that and aims to provide an optimal common basis. Splash tries to strike a delicate balance, and aims
+to "work out of the box" but may require tailoring, especially on systems with exotic configurations.
+
+Splash aims to be as modular as reasonably possible, and provides only a minimal set of "building blocks". Splash tries
+not to base decisions on assumption, and as a result provides little to no security by itself. You are in charge! 
+
+Splash is written in SELinux Common Intermediate Language to provide optimal flexibility and performance while leaving
+a relatively small foot print, catering to embedded requirements.
+
+Splash is inspired by NSA Example Policy[1], as well as Tresys Reference Policy[2].
+
+MINIMAL REQUIREMENTS
+
+Compilation requires the SELinux Common Intermediate Language (CIL) Compiler[3]
+
+The load_policy, setfiles, and setenforce utilities provided with policycoreutils by the SELinux Project[4] are
+required to load Splash policy, set file contexts and modes respectively[5]
+
+INSTALLATION
+
+1. Install the SELinux CIL compiler in "/usr/bin/"
+2. Clone the Splash GIT repository[6] in "/etc/selinux"
+3. Create "/etc/selinux/config" file with the following:
+        SELINUX=enforcing
+        SELINUXTYPE=splash
+4. Change directory to /etc/selinux/splash
+5. Execute "splash.sh"
+6. Execute "setenforce 0" to change SELinux mode to permissive
+7. Execute "load_policy" to load Splash
+8. Execute "restorecon -R -v -F /" to reset file contexts
+9. Reboot
+
+NOTES
+
+Splash only supports Linux objects and the Linux object manager. Many modern distributions depend on
+additional user space object managers some of which can be disabled on runtime, and some of which depend on one
+or more configuration files being present in "/etc/selinux/splash/contexts"
+
+Splash only supports the minimal required Identity-Based Access Control, Role-Based Access Control, and
+Type Enforcement SELinux security models but can easily be customized to support optional User-Based Access Control,
+Multi-Category, and Multi-Level Security models.
+
+[1] https://www.nsa.gov/research/_files/selinux/papers/policy2-abs.shtml
+[2] https://github.com/TresysTechnology/refpolicy/wiki
+[3] https://github.com/SELinuxProject/cil
+[4] https://github.com/SELinuxProject/selinux
+[5] https://github.com/SELinuxProject/selinux/tree/master/policycoreutils
+[6] https://github.com/doverride/splash

@@ -1,0 +1,11 @@
+; type of process to dyntransition to is not associated with subject
+
+(block test
+    (type source)
+    (call subject (source))
+
+    (type target)
+    (call object_roletype (target))
+
+    (allow test.source test.target (process (dyntransition)))
+)

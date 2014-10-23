@@ -1,0 +1,118 @@
+(boolean sec_load_policy true)
+
+(sid security)
+
+(typeattribute sec_bool_object)
+(typeattribute sec_unconfined_subject)
+
+(block bool
+    (blockabstract bool)
+        (type t)
+        (call sec_bool_object (t))
+)
+
+(in o
+    (block sec
+        (block fs
+            (type t)
+            (call fs_object (t))
+            (typeattributeset sec_bool_object t)
+
+            (context sec_fs_securityfs (s.sys.u o.r t (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/" sec_fs_securityfs)
+            (genfscon "securityfs" "/" sec_fs_securityfs)
+        )
+
+        (block load_policy
+            (blockinherit bool)
+
+            (context sec_load_policy (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (genfscon "selinuxfs" "/booleans/sec_load_policy"
+                sec_load_policy)
+        )
+    )
+)
+
+(typeattribute sec_can_load_policy)
+(typeattribute sec_not_can_load_policy_or_sec_unconfined_subject)
+(typeattributeset sec_not_can_load_policy_or_sec_unconfined_subject
+    (not (sec_can_load_policy sec_unconfined_subject)))
+(neverallow sec_not_can_load_policy_or_sec_unconfined_subject
+    o.sec.fs.t (security (load_policy)))
+
+(typeattribute sec_can_setenforce)
+(typeattribute sec_not_can_setenforce_or_sec_unconfined_subject)
+(typeattributeset sec_not_can_setenforce_or_sec_unconfined_subject
+    (not (sec_can_setenforce sec_unconfined_subject)))
+(neverallow sec_not_can_setenforce_or_sec_unconfined_subject
+    o.sec.fs.t (security (setenforce)))
+
+(typeattribute sec_can_setsecparam)
+(typeattribute sec_not_can_setsecparam_or_sec_unconfined_subject)
+(typeattributeset sec_not_can_setsecparam_or_sec_unconfined_subject
+    (not (sec_can_setsecparam sec_unconfined_subject)))
+(neverallow sec_not_can_setsecparam_or_sec_unconfined_subject
+    o.sec.fs.t (security (setsecparam)))
+
+(allow sec_unconfined_subject o.sec.fs.t list_dir_perms)
+(allow sec_unconfined_subject o.sec.fs.t read_lnk_file_perms)
+
+(typeattribute sec_bools_except_load_policy)
+(typeattributeset sec_bools_except_load_policy
+    (and (sec_bool_object) (not (o.sec.load_policy.t))))
+(allow sec_unconfined_subject sec_bool_object read_file_perms)
+(allow sec_unconfined_subject sec_bools_except_load_policy
+    (file (append write)))
+(allow sec_unconfined_subject o.sec.fs.t
+    all_security_perms_except_load_policy_and_setenforce)
+
+(booleanif (sec_load_policy)
+    (true
+        (allow sec_unconfined_subject o.sec.fs.t (security
+            (load_policy setenforce)))
+        (allow sec_unconfined_subject
+            o.sec.load_policy.t (file (append write)))))
+
+(macro sec_bool_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset sec_bool_object ARG1))
+
+(macro sec_set_enforce_mode ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 o.fs.sec.t o.fs.sec.t))
+    (typeattributeset sec_can_setenforce ARG1)
+    (booleanif (sec_load_policy)
+        (true
+            (allow ARG1 o.sec.fs.t (security (setenforce))))))
+
+(macro sec_load_policy ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 o.sec.fs.t o.sec.fs.t))
+    (typeattributeset sec_can_load_policy ARG1)
+    (booleanif (sec_load_policy)
+        (true
+            (allow ARG1 o.sec.fs.t (security (load_policy))))))
+
+(macro sec_set_all_booleans ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (allow ARG1 sec_bools_except_load_policy rw_file_perms)
+    (call read_files_pattern (ARG1 o.sec.fs.t o.sec.load_policy.t))
+    (allow ARG1 o.sec.fs.t (security (setbool)))
+    (booleanif (sec_load_policy)
+        (true
+            (allow ARG1 o.sec.load_policy.t (file (append write))))))
+
+(macro sec_set_parameter ((type ARG1))
+    (call fs_search_sysfs (ARG1))
+    (call rw_files_pattern (ARG1 o.sec.fs.t o.sec.fs.t))
+    (allow ARG1 o.sec.fs.t (security (setsecparam)))
+    (auditallow ARG1 o.sec.fs.t (security (setsecparam)))
+    (typeattributeset sec_can_setsecparam ARG1))
+
+(macro sec_unconfined_subject ((type ARG1))
+    (typeattributeset sec_unconfined_subject ARG1))
+
+(sidcontext security (s.sys.u o.r o.sec.fs.t (mls_systemhigh mls_systemhigh)))

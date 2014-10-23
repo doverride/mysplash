@@ -1,0 +1,8 @@
+; type to set current context of process is not associated with subject_can_set_current_context
+
+(block test
+    (type t)
+    (call subject (t))
+
+    (allow test.t self (process (setcurrent)))
+)

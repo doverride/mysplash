@@ -1,0 +1,341 @@
+(sid devnull)
+
+(typeattribute dev_object)
+(typeattribute dev_unconfined_subject)
+
+(typeattribute dev_stor_object)
+
+(block dev
+    (blockabstract dev)
+        (type t)
+        (call dev_object (t))
+)
+
+(in o
+    (block dev
+        (block apm
+            (blockinherit dev)
+
+            (context dev_apm (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/snapshot" char dev_apm)
+        )
+
+        (block autofs
+            (blockinherit dev)
+
+            (context dev_autofs (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/autofs" char dev_autofs)
+        )
+
+        (block clock
+            (blockinherit dev)
+
+            (context dev_clock (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/hpet" char dev_clock)
+            (filecon "/dev/rtc[0-9]+" char dev_clock)
+        )
+
+        (block console
+            (blockinherit dev)
+
+            (context dev_console (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/console" char dev_console)
+        )
+
+        (block cpu
+            (blockinherit dev)
+
+            (context dev_cpu (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/cpu/.+" char dev_cpu)
+        )
+
+        (block devtty
+            (blockinherit dev)
+
+            (context dev_devtty (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/tty" char dev_devtty)
+        )
+
+        (block dri
+            (blockinherit dev)
+
+            (context dev_dri (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/dri/.+" char dev_dri)
+        )
+
+        (block event
+            (blockinherit dev)
+
+            (context dev_event (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/input/event[0-9]+" char dev_event)
+            (filecon "/dev/uinput" char dev_event)
+        )
+
+        (block framebuf
+            (blockinherit dev)
+
+            (context dev_framebuf (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/fb[0-9]+" char dev_framebuf)
+        )
+
+        (block kmsg
+            (blockinherit dev)
+
+            (context dev_kmsg (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+            (filecon "/dev/kmsg" char dev_kmsg)
+            (filecon "/dev/mcelog" char dev_kmsg)
+        )
+
+        (block loop_control
+            (blockinherit dev)
+
+            (context dev_loop_control (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/loop-control" char dev_loop_control)
+        )
+
+        (block lvm_control
+            (blockinherit dev)
+
+            (context dev_lvm_control (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/btrfs-control" char dev_lvm_control)
+            (filecon "/dev/mapper/control" char dev_lvm_control)
+        )
+
+        (block memory
+            (blockinherit dev)
+
+            (context dev_memory (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+            (filecon "/dev/mem" char dev_memory)
+            (filecon "/dev/port" char dev_memory)
+        )
+
+        (block mouse
+            (blockinherit dev)
+
+            (context dev_mouse (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/input/mice" char dev_mouse)
+            (filecon "/dev/input/mouse[0-9]+" char dev_mouse)
+        )
+
+        (block net_control
+            (blockinherit dev)
+
+            (context dev_net_control (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/cpu_dma_latency" char dev_net_control)
+            (filecon "/dev/network_latency" char dev_net_control)
+            (filecon "/dev/network_throughput" char dev_net_control)
+        )
+
+        (block null
+            (blockinherit dev)
+        )
+
+        (block nvram
+            (blockinherit dev)
+
+            (context dev_nvram (s.sys.u o.r t (mls_systemhigh mls_systemhigh)))
+
+            (filecon "/dev/nvram" char dev_nvram)
+        )
+
+        (block ppp
+            (blockinherit dev)
+
+            (context dev_ppp (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/ppp" char dev_ppp)
+        )
+
+        (block ptmx
+            (blockinherit dev)
+
+            (context dev_ptmx (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/ptmx" char dev_ptmx)
+        )
+
+        (block random
+            (blockinherit dev)
+
+            (context dev_random (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/random" char dev_random)
+        )
+
+        (block sound
+            (blockinherit dev)
+
+            (context dev_sound (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/snd/.+" char dev_sound)
+        )
+
+        (block tun_tap
+            (blockinherit dev)
+
+            (context dev_tun_tap (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/net/tun" char dev_tun_tap)
+        )
+
+        (block uhid
+            (blockinherit dev)
+
+            (context dev_uhid (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/uhid" char dev_uhid)
+        )
+
+        (block urandom
+            (blockinherit dev)
+
+            (context dev_urandom (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/urandom" char dev_urandom)
+        )
+
+        (block usb
+            (blockinherit dev)
+
+            (context dev_usb (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/bus/usb/.+" char dev_usb)
+            (filecon "/dev/hidraw[0-9]+" char dev_usb)
+        )
+
+        (block usbmon
+            (blockinherit dev)
+
+            (context dev_usbmon (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/usbmon[0-9]+" char dev_usbmon)
+        )
+
+        (block v4l
+            (blockinherit dev)
+
+            (context dev_v4l (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/media[0-9]+" char dev_v4l)
+            (filecon "/dev/video[0-9]+" char dev_v4l)
+        )
+
+        (block vfio
+            (blockinherit dev)
+
+            (context dev_vfio (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/vfio/.+" char dev_vfio)
+        )
+
+        (block vhci
+            (blockinherit dev)
+
+            (context dev_vhci (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/vhci" char dev_vhci)
+        )
+
+        (block vhost
+            (blockinherit dev)
+
+            (context dev_vhost (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/vhost-net" char dev_vhost)
+        )
+
+        (block wireless
+            (blockinherit dev)
+
+            (context dev_wireless (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/rfkill" char dev_wireless)
+        )
+
+        (block xserver_misc
+            (blockinherit dev)
+
+            (context dev_xserver_misc (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/vga_arbiter" char dev_xserver_misc)
+        )
+
+        (block zero
+            (blockinherit dev)
+
+            (context dev_zero (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/zero" char dev_zero)
+        )
+    )
+)
+
+(typeattribute dev_can_read_memory)
+(typeattribute dev_not_can_read_memory_or_dev_unconfined_subject)
+(typeattributeset dev_not_can_read_memory_or_dev_unconfined_subject
+    (not (dev_can_read_memory dev_unconfined_subject)))
+(neverallow dev_not_can_read_memory_or_dev_unconfined_subject
+    o.dev.memory.t (chr_file (read)))
+
+(typeattribute dev_can_write_memory)
+(typeattribute dev_not_can_write_memory_or_dev_unconfined_subject)
+(typeattributeset dev_not_can_write_memory_or_dev_unconfined_subject
+    (not (dev_can_write_memory dev_unconfined_subject)))
+(neverallow dev_not_can_write_memory_or_dev_unconfined_subject
+    o.dev.memory.t (chr_file (append write)))
+
+(call fs_associate_devtmpfs (dev_object))
+
+(allow dev_unconfined_subject self (capability (sys_rawio)))
+
+(typeattribute dev_objects_except_stor_objects)
+(typeattributeset dev_objects_except_stor_objects (and (dev_object)
+    (not (dev_stor_object))))
+
+(allow dev_unconfined_subject dev_objects_except_stor_objects
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(macro dev_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset dev_object ARG1))
+
+(macro dev_stor_object ((type ARG1))
+    (call dev_object (ARG1))
+    (typeattributeset dev_stor_object ARG1))
+
+(macro dev_read_memory ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 o.dev.memory.t read_chr_file_perms)
+    (typeattributeset dev_can_read_memory ARG1))
+
+(macro dev_write_memory ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 self (capability (sys_rawio)))
+    (allow ARG1 o.dev.memory.t write_chr_file_perms)
+    (typeattributeset dev_can_write_memory ARG1))
+
+(macro dev_unconfined_subject ((type ARG1))
+    (typeattributeset dev_unconfined_subject ARG1))
+
+(context dev_null (s.sys.u o.r o.dev.null.t (systemlow systemlow)))
+
+(sidcontext devnull dev_null)
+
+(filecon "/dev/full" char dev_null)
+(filecon "/dev/null" char dev_null)

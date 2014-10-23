@@ -1,0 +1,120 @@
+(typeattribute stor_unconfined_subject)
+
+(block stor
+    (blockabstract stor)
+        (type t)
+        (call dev_stor_object (t))
+)
+
+(in o.dev
+    (block stor
+        (block fixed_disk
+            (blockinherit stor)
+
+            (context stor_fixed_disk (s.sys.u o.r t
+                (mls_systemhigh mls_systemhigh)))
+
+            (filecon "/dev/[shmxv]d[^/]*" block stor_fixed_disk)
+            (filecon "/dev/dm-[0-9]+" block stor_fixed_disk)
+            (filecon "/dev/raw/.+" char stor_fixed_disk)
+        )
+
+        (block fuse
+            (blockinherit stor)
+
+            (context stor_fuse (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/fuse" char stor_fuse)
+        )
+
+        (block removable
+            (blockinherit stor)
+
+            (context stor_removable (s.sys.u o.r t (systemlow systemlow)))
+
+            (filecon "/dev/mmcblk.+" block stor_removable)
+            (filecon "/dev/sr[0-9]+" block stor_removable)
+        )
+
+        (block scsi_generic
+            (blockinherit stor)
+
+            (context stor_scsi_generic (s.sys.u o.r t
+                (systemlow systemlow)))
+
+            (filecon "/dev/bsg/.+" char stor_scsi_generic)
+            (filecon "/dev/sg[0-9]+" char stor_scsi_generic)
+        )
+    )
+)
+
+(typeattribute stor_can_read_fixed_disk)
+(typeattribute stor_not_can_read_fixed_disk_or_stor_unconfined_subject)
+(typeattributeset stor_not_can_read_fixed_disk_or_stor_unconfined_subject
+    (not (stor_can_read_fixed_disk stor_unconfined_subject)))
+(neverallow stor_not_can_read_fixed_disk_or_stor_unconfined_subject
+    o.dev.stor.fixed_disk.t (chr_file (read)))
+(neverallow stor_not_can_read_fixed_disk_or_stor_unconfined_subject
+    o.dev.stor.fixed_disk.t (blk_file (read)))
+
+(typeattribute stor_can_write_fixed_disk)
+(typeattribute stor_not_can_write_fixed_disk_or_stor_unconfined_subject)
+(typeattributeset stor_not_can_write_fixed_disk_or_stor_unconfined_subject
+    (not (stor_can_write_fixed_disk stor_unconfined_subject)))
+(neverallow stor_not_can_write_fixed_disk_or_stor_unconfined_subject
+    o.dev.stor.fixed_disk.t (chr_file (append write)))
+(neverallow stor_not_can_write_fixed_disk_or_stor_unconfined_subject
+    o.dev.stor.fixed_disk.t (blk_file (append write)))
+
+(typeattribute stor_can_read_scsi_generic)
+(typeattribute stor_not_can_read_scsi_generic_or_stor_unconfined_subject)
+(typeattributeset stor_not_can_read_scsi_generic_or_stor_unconfined_subject
+    (not (stor_can_read_scsi_generic stor_unconfined_subject)))
+(neverallow stor_not_can_read_scsi_generic_or_stor_unconfined_subject
+    o.dev.stor.scsi_generic.t (chr_file (read)))
+
+(typeattribute stor_can_write_scsi_generic)
+(typeattribute stor_not_can_write_scsi_generic_or_stor_unconfined_subject)
+(typeattributeset stor_not_can_write_scsi_generic_or_stor_unconfined_subject
+    (not (stor_can_write_scsi_generic stor_unconfined_subject)))
+(neverallow stor_not_can_write_scsi_generic_or_stor_unconfined_subject
+    o.dev.stor.scsi_generic.t (chr_file (append write)))
+
+(allow stor_unconfined_subject o.dev.stor.fixed_disk.t
+    all_chr_file_perms_except_mounton_and_execmod)
+(allow stor_unconfined_subject o.dev.stor.fixed_disk.t
+    all_blk_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_subject o.dev.stor.fuse.t
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_subject o.dev.stor.removable.t
+    all_blk_file_perms_except_mounton_and_execmod)
+
+(allow stor_unconfined_subject o.dev.stor.scsi_generic.t
+    all_chr_file_perms_except_mounton_and_execmod)
+
+(macro stor_read_fixed_disk ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 o.dev.stor.fixed_disk.t read_chr_file_perms)
+    (allow ARG1 o.dev.stor.fixed_disk.t read_blk_file_perms)
+    (typeattributeset stor_can_read_fixed_disk ARG1))
+
+(macro stor_write_fixed_disk ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 o.dev.stor.fixed_disk.t write_chr_file_perms)
+    (allow ARG1 o.dev.stor.fixed_disk.t write_blk_file_perms)
+    (typeattributeset stor_can_write_fixed_disk ARG1))
+
+(macro stor_read_scsi_generic ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 o.dev.stor.scsi_generic.t read_chr_file_perms)
+    (typeattributeset stor_can_read_scsi_generic ARG1))
+
+(macro stor_write_scsi_generic ((type ARG1))
+    (call fs_search_devtmpfs (ARG1))
+    (allow ARG1 o.dev.stor.scsi_generic.t write_chr_file_perms)
+    (typeattributeset stor_can_write_scsi_generic ARG1))
+
+(macro stor_unconfined_subject ((type ARG1))
+    (typeattributeset stor_unconfined_subject ARG1))

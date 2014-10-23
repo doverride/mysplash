@@ -1,0 +1,130 @@
+(sid port)
+(sid netif)
+(sid netmsg)
+(sid node)
+
+(typeattribute net_port_object)
+(typeattribute net_node_object)
+(typeattribute net_if_object)
+(typeattribute net_packet_object)
+(typeattribute net_peer_object)
+
+(typeattribute net_unconfined_subject)
+
+(block port
+    (blockabstract port)
+        (type t)
+        (call net_port_object (t))
+)
+
+(block node
+    (blockabstract node)
+        (type t)
+        (call net_node_object (t))
+)
+
+(block if
+    (blockabstract if)
+        (type t)
+        (call net_if_object (t))
+)
+
+(block packet
+    (blockabstract packet)
+        (type t)
+        (call net_packet_object (t))
+)
+
+(block peer
+    (blockabstract peer)
+        (type t)
+        (call net_peer_object (t))
+)
+
+(in o
+    (block net
+        (block port
+            (blockinherit port)
+        )
+
+        (block node
+            (blockinherit node)
+        )
+
+        (block if
+            (blockinherit if)
+        )
+
+        (block packet
+            (blockinherit packet)
+        )
+
+        (block peer
+            (blockinherit peer)
+        )
+    )
+)
+
+(allow net_unconfined_subject net_node_object (node (all)))
+(allow net_unconfined_subject net_if_object (netif (all)))
+(allow net_unconfined_subject net_packet_object (packet (all)))
+
+(allow net_unconfined_subject net_port_object (tcp_socket
+    (send_msg recv_msg name_bind name_connect)))
+(allow net_unconfined_subject net_port_object (udp_socket
+    (send_msg recv_msg name_bind)))
+(allow net_unconfined_subject net_port_object (rawip_socket
+    (send_msg recv_msg name_bind)))
+(allow net_unconfined_subject net_port_object (dccp_socket
+    (send_msg recv_msg name_bind name_connect)))
+
+(allow net_unconfined_subject net_node_object (tcp_socket (node_bind)))
+(allow net_unconfined_subject net_node_object (udp_socket (node_bind)))
+(allow net_unconfined_subject net_node_object (rawip_socket (node_bind)))
+(allow net_unconfined_subject net_node_object (dccp_socket (node_bind)))
+
+(call object_recvfrom_unlabeled_tcp_socket (net_unconfined_subject))
+(call object_recvfrom_unlabeled_udp_socket (net_unconfined_subject))
+(call object_recvfrom_unlabeled_rawip_socket (net_unconfined_subject))
+(call object_recvfrom_unlabeled_dccp_socket (net_unconfined_subject))
+
+(call object_recv_unlabeled_peer (net_unconfined_subject))
+
+(macro net_port_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset net_port_object ARG1))
+
+(macro net_node_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset net_node_object ARG1))
+
+(macro net_if_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset net_if_object ARG1))
+
+(macro net_packet_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset net_packet_object ARG1))
+
+(macro net_peer_object ((type ARG1))
+    (call object (ARG1))
+    (typeattributeset net_peer_object ARG1))
+
+(macro net_unconfined_subject ((type ARG1))
+    (typeattributeset net_unconfined_subject ARG1))
+
+(context net_port (s.sys.u o.r o.net.port.t (systemlow systemlow)))
+
+(sidcontext port net_port)
+
+(context net_if (s.sys.u o.r o.net.if.t (systemlow mls_systemhigh)))
+
+(sidcontext netif net_if)
+
+(context net_peer (s.sys.u o.r o.net.peer.t (mls_systemhigh mls_systemhigh)))
+
+(sidcontext netmsg net_peer)
+
+(context net_node (s.sys.u o.r o.net.node.t (systemlow mls_systemhigh)))
+
+(sidcontext node net_node)
