@@ -448,6 +448,12 @@
 (macro file_run ((type ARG1))
     (typeattributeset file_run ARG1))
 
+(macro file_search_etc ((type ARG1))
+    (allow ARG1 o.file.etc.t search_dir_perms))
+
+(macro file_search_usr ((type ARG1))
+    (allow ARG1 o.file.usr.t search_dir_perms))
+
 (macro file_security_object ((type ARG1))
     (call object (ARG1))
     (typeattributeset file_object ARG1)
