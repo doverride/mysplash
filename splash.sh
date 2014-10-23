@@ -2,6 +2,22 @@
 
 test -d policy || mkdir policy
 
+contrib ()
+
+{
+
+LAYERS+=($(for a in $(ls source/contrib) ; do printf "%s\n" "source/contrib/$a" ; done))
+
+for LAYER in ${LAYERS[*]} ; do
+        MODULES+=($(for b in ${LAYERS[*]} ; do printf "%s\n" "$(ls $b | grep .*\.cil$)" ; done))
+
+        for MODULE in ${MODULES[*]} ; do
+                printf "%s\n" "$LAYER/$MODULE"
+        done
+done
+
+}
+
 /usr/bin/secilc \
     source/av.cil \
     source/base/dev.cil \
@@ -15,8 +31,6 @@ test -d policy || mkdir policy
     source/base/unconfined.cil \
     source/config.cil \
     source/constraints.cil \
-    source/contrib/system/libraries.cil \
-    source/contrib/system/miscfiles.cil \
     source/entity.cil \
     source/isid.cil \
     source/mls.cil \
@@ -28,4 +42,5 @@ test -d policy || mkdir policy
     source/support/filepatterns.cil \
     source/support/ipcpatterns.cil \
     source/support/miscpatterns.cil \
-    -M false -o policy/policy.29 -f contexts/files/file_contexts
+    $(contrib) \
+   -M false -o policy/policy.29 -f contexts/files/file_contexts
