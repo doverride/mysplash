@@ -1,0 +1,139 @@
+(typeattribute miscfiles_cert_object)
+(typeattribute miscfiles_terminfo_object)
+
+(block certfile
+    (blockabstract certfile)
+        (type t)
+        (call miscfiles_cert_object (t))
+)
+
+(block terminfofile
+    (blockabstract terminfofile)
+        (type t)
+        (call miscfiles_terminfo_object (t))
+)
+
+(in o.file
+    (block locale
+        (blockinherit file)
+
+        (context misc_locale (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/etc/localtime" symlink misc_locale)
+
+        (filecon "/usr/lib/locale(/.*)?" any misc_locale)
+
+        (filecon "/usr/share/locale(/.*)?" any misc_locale)
+        (filecon "/usr/share/zoneinfo(/.*)?" any misc_locale)
+    )
+
+    (block modules
+        (blockinherit file)
+
+        (context misc_modules (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/lib/modules(/.*)?" any misc_modules)
+    )
+
+    (block terminfo
+        (blockinherit terminfofile)
+
+        (context misc_terminfo (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/etc/terminfo(/.*)?" any misc_terminfo)
+
+        (filecon "/usr/share/terminfo(/.*)?" any misc_terminfo)
+    )
+
+    (block tetex
+        (blockinherit file)
+
+        (context misc_tetex (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/var/lib/texmf(/.*)?" any misc_tetex)
+
+        (filecon "/var/spool/texmf(/.*)?" any misc_tetex)
+    )
+)
+
+(in o.file.etc
+    (block cert
+        (blockinherit certfile)
+
+        (context misc_etc_cert (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/etc/pki(/.*)?" any misc_etc_cert)
+    )
+
+    (block fonts
+        (blockinherit etcfile)
+
+        (context misc_etc_fonts (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/etc/fonts(/.*)?" any misc_etc_fonts)
+    )
+
+    (block net
+        (blockinherit etcfile)
+
+        (context misc_etc_net (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/etc/hosts" file misc_etc_net)
+        (filecon "/etc/host\.conf" file misc_etc_net)
+        (filecon "/etc/sysconfig/network" file misc_etc_net)
+        (filecon "/etc/sysconfig/network-scripts(/.*)?" file misc_etc_net)
+    )
+)
+
+(in o.file.usr
+    (block factory
+        (blockinherit usrfile)
+
+        (context misc_usr_factory (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/share/factory(/.*)?" any misc_usr_factory)
+    )
+
+    (block fonts
+        (blockinherit usrfile)
+
+        (context misc_usr_fonts (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/share/fonts(/.*)?" any misc_usr_fonts)
+        (filecon "/usr/share/ghostscript/fonts(/.*)?" any misc_usr_fonts)
+    )
+
+    (block hwdata
+        (blockinherit usrfile)
+
+        (context misc_usr_hwdata (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/share/hwdata(/.*)?" any misc_usr_hwdata)
+    )
+
+    (block man
+        (blockinherit usrfile)
+
+        (context misc_usr_man (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/usr/share/man(/.*)?" any misc_usr_man)
+    )
+)
+
+(in o.file.var.cache
+    (block fonts
+        (blockinherit cachefile)
+
+        (context misc_cache_fonts (s.sys.u o.r t (systemlow systemlow)))
+
+        (filecon "/var/cache/fontconfig(/.*)?" any misc_cache_fonts)
+    )
+)
+
+(macro miscfiles_cert_object ((type ARG1))
+    (call file_object (ARG1))
+    (typeattributeset miscfiles_cert_object ARG1))
+
+(macro miscfiles_terminfo_object ((type ARG1))
+    (call file_object (ARG1))
+    (typeattributeset miscfiles_terminfo_object ARG1))
