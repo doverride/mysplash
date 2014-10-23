@@ -15,6 +15,7 @@ test -d policy || mkdir policy
     source/base/unconfined.cil \
     source/config.cil \
     source/constraints.cil \
+    source/contrib/system/miscfiles.cil \
     source/entity.cil \
     source/isid.cil \
     source/mls.cil \
