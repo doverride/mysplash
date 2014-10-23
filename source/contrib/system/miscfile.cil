@@ -1,16 +1,16 @@
-(typeattribute miscfiles_cert_object)
-(typeattribute miscfiles_terminfo_object)
+(typeattribute miscfile_cert_object)
+(typeattribute miscfile_terminfo_object)
 
 (block certfile
     (blockabstract certfile)
         (type t)
-        (call miscfiles_cert_object (t))
+        (call miscfile_cert_object (t))
 )
 
 (block terminfofile
     (blockabstract terminfofile)
         (type t)
-        (call miscfiles_terminfo_object (t))
+        (call miscfile_terminfo_object (t))
 )
 
 (in o.file
@@ -24,6 +24,7 @@
         (filecon "/usr/lib/locale(/.*)?" any misc_locale)
 
         (filecon "/usr/share/locale(/.*)?" any misc_locale)
+        (filecon "/usr/share/X11/locale(/.*)?" any misc_locale)
         (filecon "/usr/share/zoneinfo(/.*)?" any misc_locale)
     )
 
@@ -130,10 +131,10 @@
     )
 )
 
-(macro miscfiles_cert_object ((type ARG1))
+(macro miscfile_cert_object ((type ARG1))
     (call file_object (ARG1))
-    (typeattributeset miscfiles_cert_object ARG1))
+    (typeattributeset miscfile_cert_object ARG1))
 
-(macro miscfiles_terminfo_object ((type ARG1))
+(macro miscfile_terminfo_object ((type ARG1))
     (call file_object (ARG1))
-    (typeattributeset miscfiles_terminfo_object ARG1))
+    (typeattributeset miscfile_terminfo_object ARG1))
