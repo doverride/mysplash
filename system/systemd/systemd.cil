@@ -45,7 +45,7 @@
     (typeattributeset systemd_daemon_subject ARG1))
 
 (macro systemd_daemon_subject_entry ((type ARG1)(type ARG2))
-    (call subject_entry (ARG1))
+    (call subject_entry (ARG1 ARG2))
     (call auto_subject_type_transition_pattern (s.systemd.t ARG2 ARG1))
     (roletype s.sys.r ARG1))
 
