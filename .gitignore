@@ -1,4 +1,5 @@
 contexts/files/file_contexts
+LISTING
 policy/policy.*
 tests/modularity/file_contexts
 tests/modularity/policy.*
