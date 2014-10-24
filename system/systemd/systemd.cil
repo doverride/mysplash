@@ -1,0 +1,55 @@
+(typeattribute systemd_daemon_subject)
+
+(block daemon
+    (blockabstract daemon)
+
+    (type t)
+    (call systemd_daemon_subject (t))
+)
+
+;(in s
+;    (block app
+;        (blockinherit daemon)
+;)
+
+;(in o.file.bin
+;    (block app
+;        (blockinherit binfile)
+;
+;        (call systemd_daemon_subject_entry (s.app.t t))
+;)
+
+(in s
+    (block systemd
+        (type t)
+        (call subject (t))
+
+        (optional systemd_optional_unconfined
+            (call unconfined_subject (t)))
+    )
+)
+
+(in o.file.bin
+    (block systemd
+        (blockinherit binfile)
+
+        (call subject_entry (s.systemd.t t))
+
+        (context systemd_bin (s.sys.u o.r t (systemlow systemlow)))
+        (filecon "/usr/lib/systemd/systemd" file systemd_bin)
+    )
+)
+
+(macro systemd_daemon_subject ((type ARG1))
+    (call subject (ARG1))
+    (typeattributeset systemd_daemon_subject ARG1))
+
+(macro systemd_daemon_subject_entry ((type ARG1)(type ARG2))
+    (call subject_entry (ARG1 ARG2))
+    (call auto_subject_type_transition_pattern (s.systemd.t ARG2 ARG1))
+    (roletype s.sys.r ARG1))
+
+(macro systemd_dynamic_subject_type_transition ((type ARG1))
+    (call subject_dynamic_subject_type_transition_subject (ARG1))
+    (call dynamic_subject_type_transition_pattern (ARG1 s.systemd.t))
+    (typetransition ARG1 o.file.bin.systemd.t process "*" s.systemd.t))
