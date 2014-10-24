@@ -37,6 +37,7 @@
 
         (context systemd_bin (s.sys.u o.r t (systemlow systemlow)))
         (filecon "/usr/lib/systemd/systemd" file systemd_bin)
+    )
 )
 
 (macro systemd_daemon_subject ((type ARG1))
