@@ -51,4 +51,4 @@
 (macro systemd_dynamic_subject_type_transition ((type ARG1))
     (call subject_dynamic_type_transition_subject (ARG1))
     (call dynamic_subject_type_transition_pattern (ARG1 s.systemd.t))
-    (typetransition ARG1 systemd_exec_t process "*" s.systemd.t))
+    (typetransition ARG1 o.file.bin.systemd.t process "*" s.systemd.t))
