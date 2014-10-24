@@ -3,6 +3,7 @@
 (block binfile
     (blockabstract binfile)
         (type t)
+        (call file_object (t))
         (call command_bin_object (t))
 )
 
@@ -81,5 +82,4 @@
 )
 
 (macro command_bin_object ((type ARG1))
-    (call file_object (ARG1))
     (typeattributeset command_bin_file_object ARG1))
