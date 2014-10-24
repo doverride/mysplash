@@ -88,8 +88,6 @@
 (allow subject_unconfined_subject subject create_dccp_stream_socket_perms)
 (allow subject_unconfined_subject subject (tun_socket (all)))
 
-(allow subject_unconfined_subject subject_entry_file_object (file (entrypoint)))
-
 (macro subject ((type ARG1))
     (typeattributeset subject ARG1))
 
