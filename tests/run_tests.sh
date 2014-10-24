@@ -21,7 +21,7 @@ read -d '' ABSOLUTE_MIN <<"EOF"
     ../../source/support/classmaps.cil \
     ../../source/support/filepatterns.cil \
     ../../source/support/ipcpatterns.cil \
-    ../../source/support/miscpatterns.cil \
+    ../../source/support/miscpatterns.cil
 EOF
 
 read -d '' MIN <<"EOF"
