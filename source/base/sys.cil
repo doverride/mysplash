@@ -22,6 +22,9 @@
         (userlevel u systemlow)
         (userrange u (systemlow systemhigh))
 
+        (optional sys_optional_systemd
+            (call systemd_dynamic_subject_type_transition (t)))
+
         (optional sys_optional_unconfined
             (call unconfined_subject (t)))
     )

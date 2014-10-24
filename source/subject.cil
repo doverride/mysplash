@@ -125,8 +125,15 @@
 (macro subject_dynamic_subject_type_transition_subject ((type ARG1))
     (typeattributeset subject_can_set_current_context ARG1))
 
+(macro subject_entry ((type ARG1)(type ARG2))
+    (allow ARG1 ARG2 (file (entrypoint)))
+    (allow ARG1 ARG2 mmap_file_perms)
+    (call subject_entry_object (ARG2)))
+
 (macro subject_entry_object ((type ARG1))
-    (typeattributeset subject_entry_file_object ARG1))
+    (typeattributeset subject_entry_file_object ARG1)
+    (optional subject_entry_object_optional_command
+        (call command_bin_object (ARG1))))
 
 (macro subject_mmap_low ((type ARG1))
     (typeattributeset subject_can_mmap_low ARG1)
